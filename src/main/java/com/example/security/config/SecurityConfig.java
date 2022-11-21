@@ -60,6 +60,12 @@ public class SecurityConfig {
                 .tokenValiditySeconds(3600)
 //                .alwaysRemember(true)
                 .userDetailsService(userDetailsService);
+
+        http
+                .sessionManagement()
+                .maximumSessions(1) // 최대 허용 가능 세션 수, -1:무제한 로그인 세션 허용
+                .maxSessionsPreventsLogin(true) // 동시 로그인 차단함, false : 기존 세션 만료(default) -> 이전 사용자 세션 만료
+                .expiredUrl("/expired");    // 세션이 만료된 경우 이동 할 페이지
         return http.build();
     }
 
