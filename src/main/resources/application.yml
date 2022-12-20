@@ -1,1 +1,24 @@
+spring:
+  application:
+    name: security-service
+  profiles:
+    active: local
+  main:
+    allow-bean-definition-overriding: true
 
+  datasource:
+   url: jdbc:postgresql://localhost:5432/springboot
+   username: postgres
+   password: 1234
+
+  ### jpa settings
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    ### hibernate settings
+    hibernate:
+      ddl-auto: create # create #create-drop #update #validate
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
