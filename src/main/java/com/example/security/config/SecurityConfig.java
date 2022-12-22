@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -21,6 +23,7 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -48,7 +51,9 @@ import java.util.Arrays;
 //@EnableWebSecurity
 public class SecurityConfig {
 
-//    private final CustomUserDetailService userDetailsService;
+    private final CustomUserDetailService userDetailService;
+
+
 //    @Bean
 //    public UserDetailsService userDetailsService() {
 //        return userDetailsService;
@@ -89,8 +94,28 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+//            throws Exception {
+//        return authenticationConfiguration.getAuthenticationManager().;
+//    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+        return new CustomAuthenticationProvider(userDetailService, passwordEncoder());
+    }
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        AuthenticationManager authenticationManager = getAuthenticationManager(http);
+
         http
                 .authorizeHttpRequests()
                 .antMatchers("/","/users").permitAll()
@@ -103,6 +128,8 @@ public class SecurityConfig {
         http.
                 formLogin();
 
+        http.
+                authenticationManager(authenticationManager);
         return http.build();
 //        http
 //                .authorizeRequests()
@@ -162,6 +189,14 @@ public class SecurityConfig {
 //                    }
 //                });
 //        return http.build();
+    }
+
+    private AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailService);
+        authenticationManagerBuilder.authenticationProvider(authenticationProvider());
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+        return authenticationManager;
     }
 
 }
