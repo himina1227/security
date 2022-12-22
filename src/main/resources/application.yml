@@ -19,6 +19,6 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     ### hibernate settings
     hibernate:
-      ddl-auto: create # create #create-drop #update #validate
+      ddl-auto: update # create #create-drop #update #validate
       naming:
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
