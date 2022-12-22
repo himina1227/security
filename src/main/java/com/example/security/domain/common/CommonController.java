@@ -33,8 +33,8 @@ public class CommonController {
         return "Access is denied";
     }
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
+//    @GetMapping("/login")
+//    public String login() {
+//        return "login";
+//    }
 }

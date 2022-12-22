@@ -2,10 +2,12 @@ package com.example.security.config;
 
 import com.example.security.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.SecurityBuilder;
@@ -50,6 +52,7 @@ import java.util.Arrays;
 @Configuration
 //@EnableWebSecurity
 public class SecurityConfig {
+
 
     private final CustomUserDetailService userDetailService;
 
@@ -118,18 +121,22 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests()
-                .antMatchers("/","/users").permitAll()
+                .antMatchers("/","/users","user/login/**").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
 //                .antMatchers("/admin/**").access("hasRole('ADMIN') or hasRole('SYS')")
                 .anyRequest().authenticated();
 
-        http.
-                formLogin();
+        http
+                .formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login_proc")
+                .defaultSuccessUrl("/")
+                .permitAll();
 
-        http.
-                authenticationManager(authenticationManager);
+        http
+                .authenticationManager(authenticationManager);
         return http.build();
 //        http
 //                .authorizeRequests()
